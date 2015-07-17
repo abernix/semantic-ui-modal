@@ -13,7 +13,7 @@ confirmModal = function(options, postRender) {
   templateAttach(
     Template.confirmModalWrapper,
     function(instance) {
-        $('#confirmModal').modal('setting', {
+        $(instance.firstNode()).modal('setting', {
           onHidden: function () {
             Blaze.remove(instance);
           },
@@ -37,7 +37,7 @@ generalModal = function(template, data, options) {
   templateAttach(
     Template.generalModalWrapper,
     function(instance) {
-      $('#generalModal').modal('setting', _.extend( (options ? options.modalSettings : {}) || {}, {
+      $(instance.firstNode()).modal('setting', _.extend( (options ? options.modalSettings : {}) || {}, {
           onHidden: function() {
             Blaze.remove(instance);
           },
@@ -51,8 +51,7 @@ generalModal = function(template, data, options) {
     {
       dataContext: data,
       templateName: template,
-      modalClass: options && options.modalClass,
-      modal: $('#generalModal')[0]
+      modalClass: options && options.modalClass
     }
   )
 }
