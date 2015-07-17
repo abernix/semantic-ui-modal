@@ -21,7 +21,7 @@ confirmModal = function(options, postRender) {
           verbose: false,
           closable: options ? options.noButtons : null
         }).modal('show');
-        postRender && postRender.call(instance, options);
+        if ( postRender ) postRender.call(instance, options);
     },
     {
       message: options && options.message,
@@ -30,8 +30,8 @@ confirmModal = function(options, postRender) {
       delay: options && options.delay,
       noButtons: options && options.noButtons
     }
-  )
-}
+  );
+};
 
 generalModal = function(template, data, options) {
   templateAttach(
@@ -46,7 +46,7 @@ generalModal = function(template, data, options) {
       }))
       .modal('show')
       .modal('refresh');
-      options && options.postRender && options.postRender.call(this, options);
+      if ( options && options.postRender ) options.postRender.call(this, options);
     },
     {
       dataContext: data,
@@ -65,9 +65,9 @@ Template.confirmModal.events({
       instance = Template.instance(),
       delayTime = $(template.firstNode.offsetParent).modal('setting', 'duration');
 
-    this.callback && this.callback.apply(this, arguments);
-    this.delay && Meteor.setTimeout(function() {
-      _this.delay.apply(_this, arguments)
+    if ( this.callback ) this.callback.apply(this, arguments);
+    if ( this.delay ) Meteor.setTimeout(function() {
+      _this.delay.apply(_this, arguments);
     }, delayTime);
     template.$(template.firstNode.offsetParent).modal('hide');
   }
