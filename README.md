@@ -47,11 +47,13 @@ Note that if the modal is closed by clicking "Cancel", no further action will be
 
 ### generalModal(template, data, options)
 
-This will render the supplied template in a new modal, with the data context provided.  Note that although the template will be reactive with respect to any registered helpers, it *will not be reactive* with respect to the data context.  This is a consequence of the way `UI.renderWithData` works at present.
+This will render the supplied template in a new modal, with the data context provided.
 
 *template* - the string name of any registered template (note that you cannot pass the template instance constructor itself).
 
-*data* - the data context to pass to the rendered template.  Note that at present this is **NOT** reactive, so if reactivity is required in any part of the template, you need to register an appropriate helper for the supplied template.  These will work in the same way they would anywhere else.
+*data* - the data context to pass to the rendered template.  **(As of Meteor 0.8.0, this is reactive)**
+
+*Prior to Meteor 0.8.0, if reactivity is required in any part of the template, you need to register an appropriate helper for the supplied template.*
 
 *options* - an object containing any of the following:
 
