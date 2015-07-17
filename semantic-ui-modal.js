@@ -53,8 +53,8 @@ generalModal = function(template, data, options) {
       templateName: template,
       modalClass: options && options.modalClass
     }
-  )
-}
+  );
+};
 
 Template.confirmModal.events({
   'click #confirmCancel': function(event, template) {
