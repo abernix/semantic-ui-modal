@@ -14,11 +14,8 @@ confirmModal = function(options, postRender) {
     Template.confirmModalWrapper,
     function(instance) {
         $('#confirmModal').modal('setting', {
-          onHide: function() {
-              Meteor.setTimeout(function() {
-              $('.ui.dimmer.page').remove();
-              $('#confirmModal').remove();
-              }, $(this).modal('setting', 'duration'));
+          onHidden: function () {
+            Blaze.remove(instance);
           },
           debug: false,
           verbose: false,
@@ -33,19 +30,16 @@ confirmModal = function(options, postRender) {
       delay: options && options.delay,
       noButtons: options && options.noButtons
     }
-  );
-};
+  )
+}
 
 generalModal = function(template, data, options) {
   templateAttach(
     Template.generalModalWrapper,
-    function() {
+    function(instance) {
       $('#generalModal').modal('setting', _.extend( (options ? options.modalSettings : {}) || {}, {
-          onHide: function() {
-            Meteor.setTimeout(function() {
-            $('.ui.dimmer.page').remove();
-            $('#generalModal').remove();
-          }, $(this).modal('setting', 'duration'));
+          onHidden: function() {
+            Blaze.remove(instance);
           },
           debug: false,
           verbose: false
