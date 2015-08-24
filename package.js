@@ -1,8 +1,8 @@
 Package.describe({
-  name: "richsilv:semantic-ui-modal",
+  name: "abernix:semantic-ui-modal",
   summary: "Semantic UI Modals, packaged to play nice with Meteor",
   version: "1.1.0",
-  git: "https://github.com/richsilv/semantic-ui-modal.git"
+  git: "https://github.com/abernix/semantic-ui-modal.git"
 
 });
 
