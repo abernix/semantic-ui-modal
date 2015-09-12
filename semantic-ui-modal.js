@@ -11,6 +11,7 @@ function templateAttach(template, setupCallback, data) {
 
 function _setupAndShow (instance, options, refresh, renderedCallback) {
   options = options || {};
+  options.modalSettings = options.modalSettings || {};
 
   var onApprove = _.wrap(options.onApprove, function (func) {
     var result = true;
@@ -46,8 +47,12 @@ function _setupAndShow (instance, options, refresh, renderedCallback) {
     if ( typeof func === "function" ) func.apply(this, arguments);
   });
 
-  var modalSettings = _.extend( options.modalSettings || {}, {
-    closable: options.noButtons,
+  // If noButtons is set, then we MUST be closable via click-off.
+  var closable = options.closable;
+  if ( options.noButtons ) closable = true;
+
+  var modalSettings = _.extend( options.modalSettings, {
+    closable: closable,
     onShow: options.onShow,
     onHide: options.onHide,
     onApprove: onApprove,
