@@ -1,4 +1,4 @@
-templateAttach = function(template, callback, data) {
+function templateAttach(template, setupCallback, data) {
   var instance;
   if (typeof template === "string") template = Template[template];
   if (!template) return false;
@@ -6,72 +6,92 @@ templateAttach = function(template, callback, data) {
     instance = Blaze.renderWithData(template, data, document.body);
   else
     instance = Blaze.render(template, document.body);
-  return callback && callback.call(this, instance);
-};
+  return setupCallback && setupCallback.call(this, instance);
+}
 
-confirmModal = function(options, postRender) {
+function _setupAndShow (instance, options, refresh, renderedCallback) {
+  options = options || {};
+
+  var onApprove = _.wrap(options.onApprove, function (func) {
+    if ( typeof func === "function" ) func.apply(this, arguments);
+
+    // Legacy.
+    if ( typeof options.callback === "function" ) options.callback.call(this, options);
+  });
+
+  var onDeny = _.wrap(options.onDeny, function (func) {
+    if ( typeof func === "function" ) func.apply(this, arguments);
+  });
+
+  var onVisible = _.wrap(options.onVisible, function (func) {
+    if ( typeof func === "function" ) func.apply(this, arguments);
+
+    // Legacy.
+    if ( typeof options.postRender === "function" ) options.postRender.call(this, instance, options);
+  });
+
+  var onHidden = _.wrap(options.onHidden, function (func) {
+    Blaze.remove(instance);
+    if ( typeof func === "function" ) func.apply(this, arguments);
+  });
+
+  var modalSettings = _.extend( options.modalSettings || {}, {
+    closable: options.noButtons,
+    onApprove: onApprove,
+    onDeny: onDeny,
+    onVisible: onVisible,
+    onHidden: onHidden
+  });
+
+  // Setup the modal, and store the variable in the instance.
+  var modal = instance.modal = $(instance.firstNode()).modal(modalSettings);
+
+  // Show it.
+  modal.modal('show');
+
+  // Refresh, if requeseted.
+  if ( refresh ) modal.modal('refresh');
+
+  // Fire a callback with the modal.
+  if ( typeof renderedCallback === "function" ) renderedCallback.call(instance, modal);
+
+  // Return it, in case someone wants it.
+  return modal;
+}
+
+function confirmModal (options) {
+  options = options || {};
+
   templateAttach(
     Template.confirmModalWrapper,
-    function(instance) {
-        $(instance.firstNode()).modal('setting', {
-          onHidden: function () {
-            Blaze.remove(instance);
-          },
-          debug: false,
-          verbose: false,
-          closable: options ? options.noButtons : null
-        }).modal('show');
-        if ( postRender ) postRender.call(instance, options);
+    function (instance) {
+      // Setup the modal, and store the variable in the instance.
+      _setupAndShow(instance, options);
     },
     {
-      message: options && options.message,
-      header: options && options.header,
-      callback: options && options.callback,
-      delay: options && options.delay,
-      noButtons: options && options.noButtons
+      message: options.message,
+      header: options.header,
+      noButtons: options.noButtons
     }
   );
-};
+}
 
-generalModal = function(template, data, options) {
+function generalModal (template, data, options) {
+  options = options || {};
+
   templateAttach(
     Template.generalModalWrapper,
-    function(instance) {
-      $(instance.firstNode()).modal('setting', _.extend( (options ? options.modalSettings : {}) || {}, {
-          onHidden: function() {
-            Blaze.remove(instance);
-          },
-          debug: false,
-          verbose: false
-      }))
-      .modal('show')
-      .modal('refresh');
-      if ( options && options.postRender ) options.postRender.call(this, options);
+    function (instance) {
+      // Setup and also refresh it, since it's usually wrong for custom content.
+      _setupAndShow(instance, options, true);
     },
     {
       dataContext: data,
       templateName: template,
-      modalClass: options && options.modalClass
+      modalClass: options.modalClass
     }
   );
-};
-
-Template.confirmModal.events({
-  'click #confirmCancel': function(event, template) {
-    $(template.firstNode.offsetParent).modal('hide');
-  },
-  'click #confirmOkay': function(event, template) {
-    var _this = this,
-      instance = Template.instance(),
-      delayTime = $(template.firstNode.offsetParent).modal('setting', 'duration');
-
-    if ( this.callback ) this.callback.apply(this, arguments);
-    if ( this.delay ) Meteor.setTimeout(function() {
-      _this.delay.apply(_this, arguments);
-    }, delayTime);
-    template.$(template.firstNode.offsetParent).modal('hide');
-  }
-});
+}
 
 SemanticModal = {
   confirmModal: confirmModal,
