@@ -13,14 +13,25 @@ function _setupAndShow (instance, options, refresh, renderedCallback) {
   options = options || {};
 
   var onApprove = _.wrap(options.onApprove, function (func) {
-    if ( typeof func === "function" ) func.apply(this, arguments);
+    var result = true;
+    if ( typeof func === "function" ) {
+      var funcResult = func.apply(this, arguments);
+      if ( funcResult === false ) result = false;
+    }
 
     // Legacy.
     if ( typeof options.callback === "function" ) options.callback.call(this, options);
+
+    return result;
   });
 
   var onDeny = _.wrap(options.onDeny, function (func) {
-    if ( typeof func === "function" ) func.apply(this, arguments);
+    var result = true;
+    if ( typeof func === "function" ) {
+      var funcResult = func.apply(this, arguments);
+      if ( funcResult === false ) result = false;
+    }
+    return result;
   });
 
   var onVisible = _.wrap(options.onVisible, function (func) {
@@ -37,6 +48,8 @@ function _setupAndShow (instance, options, refresh, renderedCallback) {
 
   var modalSettings = _.extend( options.modalSettings || {}, {
     closable: options.noButtons,
+    onShow: options.onShow,
+    onHide: options.onHide,
     onApprove: onApprove,
     onDeny: onDeny,
     onVisible: onVisible,
