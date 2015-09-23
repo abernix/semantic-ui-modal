@@ -37,7 +37,7 @@ generalModal = function(template, data, options) {
   templateAttach(
     Template.generalModalWrapper,
     function(instance) {
-      $(instance.firstNode()).modal('setting', _.extend( (options ? options.modalSettings : {}) || {}, {
+      $(instance.firstNode()).modal('setting', _.extend( {}, (options ? options.modalSettings : {}), {
           onHidden: function() {
             Blaze.remove(instance);
           },
