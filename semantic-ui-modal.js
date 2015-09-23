@@ -51,7 +51,7 @@ function _setupAndShow (instance, options, refresh, renderedCallback) {
   var closable = options.closable;
   if ( options.noButtons ) closable = true;
 
-  var modalSettings = _.extend( options.modalSettings, {
+  var modalSettings = _.extend( {}, options.modalSettings, {
     closable: closable,
     onShow: options.onShow,
     onHide: options.onHide,
