@@ -1,6 +1,7 @@
-templateAttach = function(template, callback, data) {
+/* global SemanticModal:true */
+var templateAttach = function(template, callback, data) {
   var instance;
-  if (typeof template === "string") template = Template[template];
+  if (typeof template === 'string') template = Template[template];
   if (!template) return false;
   if (data)
     instance = Blaze.renderWithData(template, data, document.body);
@@ -9,40 +10,49 @@ templateAttach = function(template, callback, data) {
   return callback && callback.call(this, instance);
 };
 
-confirmModal = function(options, postRender) {
+var confirmModal = function(options, postRender) {
+  var data = _.pick(options,
+    'message',
+    'header',
+    'noButtons',
+    'cancelButtonText',
+    'confirmButtonText'
+  );
+
+  _.defaults(data,
+    {
+      'confirmButtonText': 'Okay',
+      'cancelButtonText': 'Cancel'
+    }
+  );
+
   templateAttach(
     Template.confirmModalWrapper,
     function(instance) {
-        $(instance.firstNode()).modal('setting', {
-          onHidden: function () {
-            Blaze.remove(instance);
-          },
-          debug: false,
-          verbose: false,
-          closable: options ? options.noButtons : null
-        }).modal('show');
-        if ( postRender ) postRender.call(instance, options);
+      $(instance.firstNode()).modal('setting', {
+        onHidden: function () {
+          Blaze.remove(instance);
+        },
+        debug: false,
+        verbose: false,
+        closable: options ? options.noButtons : null
+      }).modal('show');
+      if ( postRender ) postRender.call(instance, options);
     },
-    {
-      message: options && options.message,
-      header: options && options.header,
-      callback: options && options.callback,
-      delay: options && options.delay,
-      noButtons: options && options.noButtons
-    }
+    data
   );
 };
 
-generalModal = function(template, data, options) {
+var generalModal = function(template, data, options) {
   templateAttach(
     Template.generalModalWrapper,
     function(instance) {
       $(instance.firstNode()).modal('setting', _.extend( {}, (options ? options.modalSettings : {}), {
-          onHidden: function() {
-            Blaze.remove(instance);
-          },
-          debug: false,
-          verbose: false
+        onHidden: function() {
+          Blaze.remove(instance);
+        },
+        debug: false,
+        verbose: false
       }))
       .modal('show')
       .modal('refresh');
@@ -61,10 +71,8 @@ Template.confirmModal.events({
     $(template.firstNode.offsetParent).modal('hide');
   },
   'click #confirmOkay': function(event, template) {
-    var _this = this,
-      instance = Template.instance(),
-      delayTime = $(template.firstNode.offsetParent).modal('setting', 'duration');
-
+    var _this = this;
+    var delayTime = $(template.firstNode.offsetParent).modal('setting', 'duration');
     if ( this.callback ) this.callback.apply(this, arguments);
     if ( this.delay ) Meteor.setTimeout(function() {
       _this.delay.apply(_this, arguments);

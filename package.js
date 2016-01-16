@@ -20,6 +20,7 @@ Package.on_use(function(api) {
    * package.
    */
   api.use("templating", "client");
+  api.use("underscore@1.0.4", "client");
   api.use("semantic:ui-css@1.0.0 || 2.0.0", "client");
 
   api.add_files([
