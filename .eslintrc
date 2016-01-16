@@ -1,8 +1,30 @@
 {
-  "rules": {
-    "quotes": 0
-  },
-  "globals": {
-    "SemanticModal": true
-  }
+    "extends": "eslint:recommended",
+    "rules": {
+        "no-unused-vars": [
+          2,
+          { "args": "none" }
+        ],
+        "indent": [
+            2,
+            2
+        ],
+        "quotes": 0,
+        "linebreak-style": [
+            2,
+            "unix"
+        ],
+        "semi": [
+            2,
+            "always"
+        ],
+        "comma-dangle": 0
+    },
+    "env": {
+        "browser": true,
+        "meteor": true
+    },
+    "globals": {
+      "SemanticModal": false
+    }
 }

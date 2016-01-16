@@ -1,13 +1,14 @@
-function templateAttach(template, setupCallback, data) {
+/* global SemanticModal:true */
+var templateAttach = function(template, setupCallback, data) {
   var instance;
-  if (typeof template === "string") template = Template[template];
+  if (typeof template === 'string') template = Template[template];
   if (!template) return false;
   if (data)
     instance = Blaze.renderWithData(template, data, document.body);
   else
     instance = Blaze.render(template, document.body);
   return setupCallback && setupCallback.call(this, instance);
-}
+};
 
 function _setupAndShow (instance, options, refresh, renderedCallback) {
   options = options || {};
@@ -77,8 +78,21 @@ function _setupAndShow (instance, options, refresh, renderedCallback) {
   return modal;
 }
 
-function confirmModal (options) {
-  options = options || {};
+var confirmModal = function(options, postRender) {
+  var data = _.pick(options,
+    'message',
+    'header',
+    'noButtons',
+    'cancelButtonText',
+    'confirmButtonText'
+  );
+
+  _.defaults(data,
+    {
+      'confirmButtonText': 'Okay',
+      'cancelButtonText': 'Cancel'
+    }
+  );
 
   templateAttach(
     Template.confirmModalWrapper,
@@ -86,17 +100,11 @@ function confirmModal (options) {
       // Setup the modal, and store the variable in the instance.
       _setupAndShow(instance, options);
     },
-    {
-      message: options.message,
-      header: options.header,
-      noButtons: options.noButtons
-    }
+    data
   );
-}
+};
 
-function generalModal (template, data, options) {
-  options = options || {};
-
+var generalModal = function(template, data, options) {
   templateAttach(
     Template.generalModalWrapper,
     function (instance) {
@@ -109,7 +117,7 @@ function generalModal (template, data, options) {
       modalClass: options.modalClass
     }
   );
-}
+};
 
 SemanticModal = {
   confirmModal: confirmModal,
